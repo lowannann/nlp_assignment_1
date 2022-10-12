@@ -1,0 +1,27 @@
+version: "3"
+
+services:
+  scraptt:
+    build: .
+    environment:
+      - PYTHON_ENV=production
+    depends_on:
+      - redis
+    links:
+      - redis
+
+    # define your crawler here!
+    command: bash -c "scrapy crawl ptt -a boards=Soft_Job -a index_from=1722 -a index_to=1723 -a ip_cache=True"
+
+    volumes:
+      - "./data:/app/data"
+
+  redis:
+    image: redis:7
+    restart: always
+    healthcheck:
+      test: "redis-cli ping"
+      interval: 3s
+      timeout: 3s
+      retries: 5
+      start_period: 5s
